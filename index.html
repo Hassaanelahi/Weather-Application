@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer"
+    />
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .loader {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: inline-block;
+            position: relative;
+            border: 3px solid;
+            border-color: #FFF #FFF transparent transparent;
+            box-sizing: border-box;
+            animation: rotation 1s linear infinite;
+            margin: auto;
+        }
+        
+        .loader::after,
+        .loader::before {
+            content: '';
+            box-sizing: border-box;
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            margin: auto;
+            border: 3px solid;
+            border-color: transparent transparent rgb(148 163 184) rgb(148 163 184);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            box-sizing: border-box;
+            animation: rotationBack 0.5s linear infinite;
+            transform-origin: center center;
+        }
+        
+        .loader::before {
+            width: 32px;
+            height: 32px;
+            border-color: #FFF #FFF transparent transparent;
+            animation: rotation 1.5s linear infinite;
+        }
+        
+        @keyframes rotation {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        
+        @keyframes rotationBack {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(-360deg);
+            }
+        }
+        
+        .toastify {
+            box-shadow: 0 3px 6px -1px rgba(0, 0, 0, .12), 0 10px 36px -4px rgb(51 65 85);
+        }
+        
+        .toast-close {
+            color: #fff;
+            font-size: 0.9em;
+            opacity: 1; 
+            padding: 0 7px;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-900 flex flex-col justify-center items-center h-screen">
+
+    <div class="px-5 py-10 w-3/5 rounded-xl text-center ease-linear">
+
+        <h2 class="text-white text-3xl sm:text-5xl font-semibold ">Worldwide City Weather</h2>
+        <p class="text-slate-400 font-semibold my-2">Discover City Weather Anywhere!</p>
+
+        <form class="flex flex-row justify-center items-center" onsubmit="getCity()">
+
+            <input id="inputCity" class="outline-none border-none py-2 px-3 text-slate-600 font-semibold rounded-md my-4 w-[100%] md:w-[50%]" type="text" placeholder="Enter a City">
+
+            <button type="submit" onclick="getCity()" class="bg-slate-700 px-4 py-[9px] ml-1 outline-none border-none rounded-md text-white">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </button>
+
+        </form>
+
+    </div>
+
+
+    <div class="bg-slate-800 px-5 py-7 h-40 w-3/4 md:w-9/12 xl:w-7/12 rounded-xl mt-5 mb-5 sm:mb-0 flex flex-col md:flex-row-reverse justify-between items-center invisible" id="main_div">
+
+    </div>
+
+
+
+
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script src="app.js"></script>
+
+</body>
+
+</html>

@@ -2,82 +2,112 @@ const Api_Key = `28fc3004f7a3d2bcd089c4786c428d36`
 localStorage.removeItem("lastCity")
 let cityName;
 
+
+// -------------------------------------------------------------- \\
+
 function getCity() {
 
     event.preventDefault()
     cityName = document.getElementById("inputCity")
-
     callApi(cityName.value)
 
 }
 
+// -------------------------------------------------------------- \\
+
 
 let callApi = async(city_Name) => {
     let getData;
-    try {
-        main_div.classList.add("h-40")
-        main_div.classList.remove("invisible")
-        main_div.innerHTML = `<span class="loader"></span>`
 
-        let api = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city_Name}&appid=${Api_Key}&units=metric`)
+    main_div.classList.add("h-40")
+    main_div.classList.remove("invisible")
+    main_div.innerHTML = `<span class="loader"></span>`
 
-        getData = await api.json()
+    let api = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city_Name}&appid=${Api_Key}&units=metric`)
 
-        return getWeatherData(getData)
-    } catch (error) {
+    .then(async(response) => {
 
-        let localSCity = localStorage.getItem("lastCity")
+            let localSCity = localStorage.getItem("lastCity")
 
-        if (getData.cod == "404") {
+            if (response.status == "404") {
 
-            if (!localSCity) {
-                mess("Please enter correct city name")
-                main_div.classList.add("invisible")
-                main_div.classList.add("h-40")
-                main_div.innerHTML = ``
+                if (!localSCity) {
+                    mess("Please enter correct city name")
+                    main_div.classList.add("invisible")
+                    main_div.classList.add("h-40")
+                    main_div.innerHTML = ``
+
+                } else {
+                    // cityName.value = localSCity
+                    localStorage.setItem("lastCity", localSCity)
+                    callApi(localSCity)
+                    mess("Please enter correct city name")
+                }
+
+            } else if (response.status == "400") {
+
+                if (!localSCity) {
+                    mess("Please enter a city name")
+                    main_div.classList.add("invisible")
+                    main_div.classList.add("h-40")
+                    main_div.innerHTML = ``
+
+                } else {
+                    // cityName.value = localSCity
+                    localStorage.setItem("lastCity", localSCity)
+                    callApi(localSCity)
+                    mess("Please enter a city name")
+                }
 
             } else {
-                cityName.value = localSCity
-                callApi(localSCity)
-                mess("Please enter correct city name")
+
+                getData = await response.json()
+                localStorage.setItem("lastCity", city_Name)
+                return getWeatherData(getData)
             }
-
-        } else if (getData.cod == "400") {
-            
-            if(!localSCity){
-                mess("Please enter a city name")
-                main_div.classList.add("invisible")
-                main_div.classList.add("h-40")
-                main_div.innerHTML = ``
-            } 
-
-            else{
-                cityName.value = localSCity
-                callApi(localSCity)
-                mess("Please enter a city name")
-            }
-
-        } else {
+        })
+        .catch((error) => {
             mess("Opps! Something wrong try again later")
             main_div.classList.add("invisible")
             main_div.classList.add("h-40")
             main_div.innerHTML = ``
-            console.log(error)
-
-        }
-
-    }
-
-    // TypeError: Failed to fetch
-
-
+            cityName.value = ""
+        })
 }
+
+
+
+
+// -------------------------------------------------------------- \\
 
 
 let getWeatherData = (weatherData) => {
 
+    let sunriseHours = new Date(weatherData.sys.sunrise * 1000).getHours();
+    let sunriseMinutes = new Date(weatherData.sys.sunrise * 1000).getMinutes();
 
+    if (sunriseMinutes < 10) {
+        sunriseMinutes = "0" + sunriseMinutes;
+    }
+    let sunriseampm = "AM";
 
+    if (sunriseHours > 12) {
+        sunriseHours -= 12;
+        sunriseampm = "PM";
+    }
+
+    let sunsetHours = new Date(weatherData.sys.sunset * 1000).getHours();
+    let sunsetMinutes = new Date(weatherData.sys.sunset * 1000).getMinutes();
+
+    if (sunsetMinutes < 10) {
+        sunsetMinutes = "0" + sunsetMinutes;
+    }
+    let sunseteampm = "AM";
+
+    if (sunsetHours > 12) {
+        sunsetHours -= 12;
+        sunseteampm = "PM";
+    }
 
     let main_div = document.getElementById("main_div")
 
@@ -88,8 +118,14 @@ let getWeatherData = (weatherData) => {
             
             <div class="text-white sm:text-end mb-5 sm:mb-0">
             <p class="text-white text-3xl font-semibold ">${weatherData.name}, ${weatherData.sys.country}</p>
-            <span class="text-slate-400 my-2">Wednesday 8, 2023</span><br>
-            <span class="text-slate-400  my-2">6:13 PM</span>
+            <div class="text-slate-400 flex items-center sm:justify-end">
+                <img class="w-7 mr-2" src="sunrise.png" alt="">
+                <span>${sunriseHours}:${sunriseMinutes} ${sunriseampm}</span>
+            </div>
+            <div class="text-slate-400 flex items-center sm:justify-end">
+                <img class="w-7 mr-2" src="sunset-.png" alt="">
+                <span>${sunsetHours}:${sunsetMinutes} ${sunseteampm}</span>
+            </div>
             </div>
             
             </div>
@@ -110,11 +146,13 @@ let getWeatherData = (weatherData) => {
 
             </div>
         `;
-    localStorage.setItem("lastCity", cityName.value)
+    // localStorage.setItem("lastCity", cityName.value)
     cityName.value = ""
 
 
 }
+
+// -------------------------------------------------------------- \\
 
 let mess = (message) => {
     Toastify({
@@ -133,23 +171,3 @@ let mess = (message) => {
         },
     }).showToast();
 }
-
-// Toastify({
-//     text: "This is a toast",
-//     duration: 4000,
-//     // destination: "https://github.com/apvarun/toastify-js",
-//     // newWindow: true,
-//     close: true,
-//     gravity: "bottom", // `top` or `bottom`
-//     position: "right", // `left`, `center` or `right`
-//     stopOnFocus: true, // Prevents dismissing of toast on hover
-//     style: {
-//       background: "rgb(51 65 85)",
-//     //   background: "0 3px 6px -1px rgba(0,0,0,.12), 0 10px 36px -4px rgba(77,96,232,.3)"
-//     },
-//     offset: {
-//         x: 10, // horizontal axis - can be a number or a string indicating unity. eg: '2em'
-//         y: 10 // vertical axis - can be a number or a string indicating unity. eg: '2em'
-//       },
-//     // onClick: function(){} // Callback after click
-//   }).showToast();

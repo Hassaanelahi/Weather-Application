@@ -68,6 +68,7 @@ let callApi = async(city_Name) => {
         })
         .catch((error) => {
             mess("Opps! Something wrong try again later")
+            localStorage.removeItem("lastCity")
             main_div.classList.add("invisible")
             main_div.classList.add("h-40")
             main_div.innerHTML = ``

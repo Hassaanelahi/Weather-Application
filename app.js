@@ -1,4 +1,4 @@
-const Api_Key = `28fc3004f7a3d2bcd089c4786c428d36`
+const Api_Key = `YOUR_KEY`
 localStorage.removeItem("lastCity")
 let cityName;
 
